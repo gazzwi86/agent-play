@@ -1,0 +1,17 @@
+[
+  {
+    "query": "I want to know about barbecue around the world. The styles, what makes them unique, their history, characteristics, associations, cooking method, meats, accompaniments, sauces and rubs associated with them. I want to know cook times, flavor profiles and how difficult they are considered. Also the signs of quality and success so I can measure the outcome.",
+    "expected_agent_response": "Okay, I will help you clarify your research request about barbecue styles around the world.",
+    "follow_ups": [
+      {
+        "user": "An overview of the styles, regions, their characteristic and techniques, and idea on the flavours",
+        "agent": "Great, that is a good starting point for the report. To further refine the scope: Are there any specific regions or countries you'd like to prioritize in this overview? And, in terms of flavors, would you like the report to focus more on the ingredients used, or on the overall taste profiles (e.g., smoky, sweet, spicy)?"
+      },
+      {
+        "user": "Mexico, america, aouth america, south america, korean, japan, south east asia. We like indonesian style as its sweet, spice and complexi thanks to the spices, but you still get a strong smoke and meat flavour.",
+        "agent": "Understood. Thank you for clarifying. I now have a good understanding of the regions and flavor preferences you're interested in."
+      }
+    ],
+    "reference_answer": "The clarify agent should guide the user to specify regions and flavor interests, confirming understanding."
+  }
+]

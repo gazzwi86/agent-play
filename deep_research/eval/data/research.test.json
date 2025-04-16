@@ -1,0 +1,29 @@
+[
+  {
+    "query": "ok",
+    "expected_agent_response": "Here are two search queries to begin researching barbecue styles around the world, focusing on the regions and flavor profiles you specified:",
+    "intermediate_steps": [
+      {
+        "tool": "search",
+        "inputs": [
+          "Mexican barbecue styles history characteristics",
+          "Asian barbecue techniques flavor profiles"
+        ],
+        "outputs": [
+          "search results with relevant URLs"
+        ]
+      },
+      {
+        "tool": "content_extractor",
+        "inputs": ["URLs from search results"],
+        "outputs": ["Extracted content"]
+      },
+      {
+        "tool": "summarizer",
+        "inputs": ["Extracted content"],
+        "outputs": ["Summarized learnings"]
+      }
+    ],
+    "reference_answer": "The research agent should generate search queries, extract and summarize content, and present key learnings for each region."
+  }
+]

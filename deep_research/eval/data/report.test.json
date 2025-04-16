@@ -1,0 +1,7 @@
+[
+  {
+    "query": "ok pass all this to the report_agent",
+    "expected_agent_response": "Global Barbecue Traditions: A Culinary Exploration",
+    "reference_answer": "The report agent should compile a comprehensive, semantically relevant report on global barbecue styles, techniques, and characteristics, as outlined in the example."
+  }
+]

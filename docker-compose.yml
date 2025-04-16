@@ -1,0 +1,143 @@
+name: basic-ai
+services:
+  webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui
+    restart: unless-stopped
+    ports:
+      - "3000:8080" # Explicit port mapping
+    volumes:
+      - ./webui-data:/data
+    networks:
+      - basic-ai-network
+    environment:
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678" # Explicit port mapping
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=change-this-postgres-password
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_PERSONALIZATION_ENABLED=false
+      - N8N_ENCRYPTION_KEY
+      - N8N_USER_MANAGEMENT_JWT_SECRET
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    volumes:
+      - ./n8n-data:/home/node/.n8n
+    depends_on:
+      - postgres
+    networks:
+      - basic-ai-network
+
+  # database - must install vector extension
+  postgres:
+    image: postgres:16-alpine
+    hostname: postgres
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432" # Explicit port mapping
+    volumes:
+      - postgres_storage:/var/lib/postgresql/data
+    networks:
+      - basic-ai-network
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Scraper alternative
+  crawl4ai:
+    image: unclecode/crawl4ai:latest
+    container_name: crawl4ai
+    hostname: crawl4ai
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 1G
+    ports:
+      - "11235:11235"
+    networks:
+      - basic-ai-network
+    volumes:
+      - /dev/shm:/dev/shm
+    environment:
+      - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN}
+      - MAX_CONCURRENT_TASKS=5
+      - ENABLE_GPU=false
+  
+  # Google scraper
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    hostname: searxng
+    restart: unless-stopped
+    networks:
+      - basic-ai-network
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./searxng:/etc/searxng
+    environment:
+      - SEARXNG_SECRET=some-secret
+      - SEARXNG_STATIC_USE_HASH=true
+      - SEARXNG_BASE_URL=https://${SEARXNG_HOSTNAME:-localhost}/
+      - UWSGI_WORKERS=${SEARXNG_UWSGI_WORKERS:-4}
+      - UWSGI_THREADS=${SEARXNG_UWSGI_THREADS:-4}
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+# # Notion alternative
+# appflowy-server:
+#     image: appflowy/appflowy-server:latest
+#     container_name: appflowy
+#     restart: unless-stopped
+#     ports:
+#       - "8000:8000"
+#     networks:
+#       - basic-ai-network
+#     volumes:
+#       - ./appflow-data:/app/data
+#     environment:
+#       - DATABASE_URL=postgres://${DB_POSTGRESDB_USER}:${DB_POSTGRESDB_PASSWORD}@host.docker.internal:5432/${POSTGRES_DB}
+#       - DATABASE_POOL_SIZE=10
+#       - PORT=8000
+#       - RUST_LOG=info
+#       - JWT_SECRET=your_secure_jwt_secret
+
+networks:
+  basic-ai-network:
+    driver: bridge
+
+volumes:
+  postgres_storage:
+  supabase_storage:

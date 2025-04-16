@@ -1,0 +1,1 @@
+I want to research the best American barbecue style for me to try. I want details on the key features of the style (such as sweeter, more bark etc), the location it comes from, the common meats and veg, the signs of quality, a complexity index and the sauces and rubs
